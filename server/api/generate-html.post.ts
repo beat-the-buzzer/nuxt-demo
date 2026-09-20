@@ -1,11 +1,13 @@
 import { writeFile } from 'fs/promises'
 import { join } from 'path'
+import DOMPurify from 'dompurify';
 
 export default defineEventHandler(async (event) => {
   console.log('执行了')
   const body = await readBody(event)
-  const { content } = body
-
+  let { content } = body
+  content = DOMPurify.sanitize(content)
+  
   if (!content) {
     return {
       success: false,
@@ -31,7 +33,15 @@ export default defineEventHandler(async (event) => {
       padding: 20px;
       line-height: 1.6;
     }
+    img[data-src] {
+      min-height: 100px;
+      background-color: #f0f0f0;
+    }
+    img.lazy-loaded {
+      transition: opacity 0.3s ease;
+    }
   </style>
+  <script src="/article.js" defer></script>
 </head>
 <body>
   ${content}
